@@ -1,0 +1,17 @@
+.git
+.github
+.env
+.coverage
+__pycache__
+*.pyc
+venv/
+data/
+notebooks/
+mlruns/
+mlartifacts/
+mlflow.db
+mlops_demo_files_1/
+mlops_demo_files_1.zip
+docs/
+*.zip
+*.log

@@ -1,0 +1,314 @@
+<title>MLOps Pipeline — Energy Market Forecasting</title>
+<style>
+  :root{
+    --ground:#F5F7FA; --panel:#FFFFFF; --panel-2:#EEF2F8;
+    --ink:#16202E; --ink-soft:#59647A; --ink-faint:#8A93A6;
+    --line:#D6DDE8; --line-soft:#E7ECF3;
+    --accent:#2E63F6; --accent-soft:#E4ECFF; --accent-ink:#1B44C4;
+    --amber:#B5730E; --amber-soft:#FBEED6;
+    --green:#2E8B57;
+    --shadow:0 1px 2px rgba(20,32,54,.05),0 8px 24px rgba(20,32,54,.07);
+    --radius:14px;
+    --s1:#0FB5A6; --s2:#0EA5E9; --s3:#3B82F6; --s4:#6366F1;
+    --s5:#8B5CF6; --s6:#A855F7; --s7:#EC4899; --s8:#F59E0B;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0E131B; --panel:#161D28; --panel-2:#1D2634;
+      --ink:#E8EDF4; --ink-soft:#9AA6BA; --ink-faint:#6C788C;
+      --line:#2A3546; --line-soft:#212B3A;
+      --accent:#5E8CFF; --accent-soft:#1A2540; --accent-ink:#AFC4FF;
+      --amber:#E0A64A; --amber-soft:#2C2413;
+      --green:#4FB07A;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#F5F7FA; --panel:#FFFFFF; --panel-2:#EEF2F8;
+    --ink:#16202E; --ink-soft:#59647A; --ink-faint:#8A93A6;
+    --line:#D6DDE8; --line-soft:#E7ECF3;
+    --accent:#2E63F6; --accent-soft:#E4ECFF; --accent-ink:#1B44C4;
+    --amber:#B5730E; --amber-soft:#FBEED6; --green:#2E8B57;
+    --shadow:0 1px 2px rgba(20,32,54,.05),0 8px 24px rgba(20,32,54,.07);
+  }
+  :root[data-theme="dark"]{
+    --ground:#0E131B; --panel:#161D28; --panel-2:#1D2634;
+    --ink:#E8EDF4; --ink-soft:#9AA6BA; --ink-faint:#6C788C;
+    --line:#2A3546; --line-soft:#212B3A;
+    --accent:#5E8CFF; --accent-soft:#1A2540; --accent-ink:#AFC4FF;
+    --amber:#E0A64A; --amber-soft:#2C2413; --green:#4FB07A;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace}
+  .wrap{max-width:1140px; margin:0 auto; padding:40px 24px 72px}
+
+  /* ---------- header ---------- */
+  header{margin-bottom:36px}
+  .eyebrow{
+    font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--accent); font-weight:700; margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(26px,4.4vw,40px); line-height:1.08; margin:0 0 12px;
+    letter-spacing:-.02em; text-wrap:balance; font-weight:800;
+  }
+  .lede{font-size:clamp(15px,1.6vw,17px); color:var(--ink-soft); max-width:62ch; margin:0}
+  .meta-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px}
+  .tag{
+    font-size:12px; padding:5px 11px; border-radius:999px;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--ink-soft);
+    font-weight:600;
+  }
+  .tag b{color:var(--ink); font-weight:700}
+
+  /* ---------- overall grid ---------- */
+  .board{display:grid; grid-template-columns:1fr 320px; gap:28px; align-items:start}
+  @media (max-width:860px){ .board{grid-template-columns:1fr} }
+
+  .col-title{
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-faint); font-weight:700; margin:0 0 14px;
+  }
+
+  /* ---------- pipeline spine ---------- */
+  .spine{display:flex; flex-direction:column; gap:0}
+  .stage{
+    display:grid; grid-template-columns:52px 1fr; gap:16px;
+    position:relative; padding-bottom:22px;
+  }
+  .stage:last-child{padding-bottom:0}
+  /* connector line behind badges */
+  .rail{position:relative; display:flex; flex-direction:column; align-items:center}
+  .rail::before{
+    content:""; position:absolute; top:8px; bottom:-22px; width:2px;
+    background:linear-gradient(var(--line),var(--line)); left:50%; transform:translateX(-50%);
+  }
+  .stage:last-child .rail::before{display:none}
+  .badge{
+    width:40px; height:40px; border-radius:11px; display:grid; place-items:center;
+    font-weight:800; font-size:15px; color:#fff; position:relative; z-index:1;
+    box-shadow:var(--shadow); flex:none;
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:15px 17px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+    transition:transform .16s ease, border-color .16s ease;
+  }
+  .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--stripe,var(--accent))}
+  .card:hover{transform:translateY(-2px); border-color:var(--stripe,var(--accent))}
+  .stage-name{font-size:16px; font-weight:750; margin:0 0 3px; letter-spacing:-.01em}
+  .stage-desc{font-size:13.5px; color:var(--ink-soft); margin:0 0 11px}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px}
+  .chip{
+    font-size:11.5px; font-weight:650; padding:3px 9px; border-radius:7px;
+    background:var(--stripe-soft,var(--accent-soft)); color:var(--stripe,var(--accent-ink));
+    border:1px solid transparent;
+  }
+  :root[data-theme="dark"] .chip, @media(prefers-color-scheme:dark){}
+  .paths{display:flex; flex-wrap:wrap; gap:6px 14px}
+  .path{font-size:12px; color:var(--ink-faint)}
+  .path b{color:var(--ink-soft); font-weight:600}
+
+  /* ---------- right rail: platform layers ---------- */
+  .rail-col{position:sticky; top:24px}
+  @media (max-width:860px){ .rail-col{position:static} }
+  .layer{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow);
+  }
+  .layer h3{
+    font-size:13px; margin:0 0 3px; font-weight:750; display:flex; align-items:center; gap:8px;
+  }
+  .dot{width:9px; height:9px; border-radius:50%; flex:none}
+  .layer p{font-size:12.5px; color:var(--ink-soft); margin:4px 0 0}
+  .layer .tools{font-size:12px; color:var(--ink-faint); margin-top:7px}
+  .layer .tools b{color:var(--ink-soft); font-weight:600}
+
+  .span-note{
+    font-size:11.5px; color:var(--ink-faint); border-left:2px dashed var(--line);
+    padding:2px 0 2px 12px; margin:0 0 16px;
+  }
+
+  /* ---------- footer legend ---------- */
+  .legend{
+    margin-top:34px; padding-top:20px; border-top:1px solid var(--line);
+    display:flex; flex-wrap:wrap; gap:16px 26px; align-items:center;
+  }
+  .legend .li{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft)}
+  .sw{width:14px; height:14px; border-radius:4px; flex:none}
+  .foot{margin-top:22px; font-size:12px; color:var(--ink-faint)}
+
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
+  .stage,.layer{animation:rise .5s ease both}
+  .stage:nth-child(2){animation-delay:.04s}.stage:nth-child(3){animation-delay:.08s}
+  .stage:nth-child(4){animation-delay:.12s}.stage:nth-child(5){animation-delay:.16s}
+  .stage:nth-child(6){animation-delay:.20s}.stage:nth-child(7){animation-delay:.24s}
+  .stage:nth-child(8){animation-delay:.28s}
+  @keyframes rise{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">MLOps Reference Architecture</p>
+    <h1>Energy-Market Demand Forecasting — End-to-End Pipeline</h1>
+    <p class="lede">Data flows top to bottom through eight lifecycle stages. Each stage names the framework that powers it and the folder it lives in. The platform layers on the right operate <em>across</em> every stage.</p>
+    <div class="meta-row">
+      <span class="tag"><b>Orchestrator</b>&nbsp; DVC 3.67</span>
+      <span class="tag"><b>Registry</b>&nbsp; MLflow 2.19</span>
+      <span class="tag"><b>Features</b>&nbsp; Feast 0.61</span>
+      <span class="tag"><b>Serving</b>&nbsp; Flask · Gunicorn</span>
+      <span class="tag"><b>Deploy</b>&nbsp; k8s · ArgoCD</span>
+    </div>
+  </header>
+
+  <div class="board">
+    <!-- ===================== PIPELINE SPINE ===================== -->
+    <section>
+      <p class="col-title">Data → Model → Serving pipeline</p>
+      <div class="spine">
+
+        <div class="stage" style="--stripe:var(--s1);--stripe-soft:#0fb5a622">
+          <div class="rail"><div class="badge" style="background:var(--s1)">01</div></div>
+          <div class="card">
+            <p class="stage-name">Ingestion</p>
+            <p class="stage-desc">Pull DAM/RTM prices, generation, weather &amp; calendar into the raw zone.</p>
+            <div class="chips"><span class="chip">Python loaders</span><span class="chip">requests / pandas</span></div>
+            <div class="paths"><span class="path mono"><b>src/1_ingestion/</b></span><span class="path mono">inputdata/ · data/</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s2);--stripe-soft:#0ea5e922">
+          <div class="rail"><div class="badge" style="background:var(--s2)">02</div></div>
+          <div class="card">
+            <p class="stage-name">Validation</p>
+            <p class="stage-desc">Data-quality suites gate bad data before it reaches features.</p>
+            <div class="chips"><span class="chip">Great Expectations 0.17</span></div>
+            <div class="paths"><span class="path mono"><b>src/2_validation/</b></span><span class="path mono">gx/</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s3);--stripe-soft:#3b82f622">
+          <div class="rail"><div class="badge" style="background:var(--s3)">03</div></div>
+          <div class="card">
+            <p class="stage-name">Feature Engineering</p>
+            <p class="stage-desc">Build features, register views, materialize to the online store.</p>
+            <div class="chips"><span class="chip">Feast 0.61</span><span class="chip">SQLite online store</span></div>
+            <div class="paths"><span class="path mono"><b>src/3_feature_engineering/</b></span><span class="path mono">my_feature_store/</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s4);--stripe-soft:#6366f122">
+          <div class="rail"><div class="badge" style="background:var(--s4)">04</div></div>
+          <div class="card">
+            <p class="stage-name">Training</p>
+            <p class="stage-desc">Train candidates, log params/metrics to MLflow, pick best by RMSE.</p>
+            <div class="chips"><span class="chip">scikit-learn 1.8</span><span class="chip">XGBoost 3.2</span><span class="chip">MLflow</span></div>
+            <div class="paths"><span class="path mono"><b>src/4_training/</b></span><span class="path mono">models/ · metrics.json</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s5);--stripe-soft:#8b5cf622">
+          <div class="rail"><div class="badge" style="background:var(--s5)">05</div></div>
+          <div class="card">
+            <p class="stage-name">Evaluation</p>
+            <p class="stage-desc">Score the trained model on held-out data; emit eval metrics.</p>
+            <div class="chips"><span class="chip">scikit-learn metrics</span></div>
+            <div class="paths"><span class="path mono"><b>src/5_evaluation/</b></span><span class="path mono">eval_metrics.json</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s6);--stripe-soft:#a855f722">
+          <div class="rail"><div class="badge" style="background:var(--s6)">06</div></div>
+          <div class="card">
+            <p class="stage-name">Promotion</p>
+            <p class="stage-desc">Gated promotion of the best model version to the serving stage.</p>
+            <div class="chips"><span class="chip">MLflow Registry</span></div>
+            <div class="paths"><span class="path mono"><b>src/6_promotion/</b></span><span class="path mono">promote_report.json</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s7);--stripe-soft:#ec489922">
+          <div class="rail"><div class="badge" style="background:var(--s7)">07</div></div>
+          <div class="card">
+            <p class="stage-name">Serving</p>
+            <p class="stage-desc">REST API loads the promoted model, reads online features, predicts. <span class="mono">:8000</span></p>
+            <div class="chips"><span class="chip">Flask 3.1</span><span class="chip">Gunicorn</span><span class="chip">nginx</span><span class="chip">Postgres log</span></div>
+            <div class="paths"><span class="path mono"><b>app/ · src/7_prediction/</b></span><span class="path mono">app_config/ · predictions/</span></div>
+          </div>
+        </div>
+
+        <div class="stage" style="--stripe:var(--s8);--stripe-soft:#f59e0b22">
+          <div class="rail"><div class="badge" style="background:var(--s8)">08</div></div>
+          <div class="card">
+            <p class="stage-name">Monitoring</p>
+            <p class="stage-desc">Scrape metrics, dashboard latency/throughput, detect data drift.</p>
+            <div class="chips"><span class="chip">Prometheus</span><span class="chip">Grafana</span><span class="chip">Evidently 0.7</span></div>
+            <div class="paths"><span class="path mono"><b>src/8_monitoring/</b></span><span class="path mono">monitoring/ · drift_baselines/</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== PLATFORM LAYERS ===================== -->
+    <aside class="rail-col">
+      <p class="col-title">Cross-cutting platform layers</p>
+      <p class="span-note">These run across all eight stages — not a single step in the flow.</p>
+
+      <div class="layer">
+        <h3><span class="dot" style="background:var(--accent)"></span> Orchestration</h3>
+        <p>Chains stages 01→06 and re-runs only what's stale.</p>
+        <div class="tools"><b>DVC 3.67</b> · <span class="mono">dvc repro</span> → dvc.yaml / dvc.lock</div>
+      </div>
+
+      <div class="layer">
+        <h3><span class="dot" style="background:var(--s4)"></span> Tracking &amp; Registry</h3>
+        <p>Experiment tracking + model registry; UI on <span class="mono">:5000</span>.</p>
+        <div class="tools"><b>MLflow 2.19</b> → mlruns/ · mlartifacts/ · mlflow.db</div>
+      </div>
+
+      <div class="layer">
+        <h3><span class="dot" style="background:var(--green)"></span> Lineage</h3>
+        <p>Every stage emits lineage events for an end-to-end graph.</p>
+        <div class="tools"><b>Marquez + OpenLineage 1.49</b> → src/lineage.py</div>
+      </div>
+
+      <div class="layer">
+        <h3><span class="dot" style="background:var(--amber)"></span> Packaging</h3>
+        <p>Containerises app + training; one-command local stack.</p>
+        <div class="tools"><b>Docker + Compose</b> → Dockerfile · docker-compose.yml</div>
+      </div>
+
+      <div class="layer">
+        <h3><span class="dot" style="background:var(--s7)"></span> CI/CD</h3>
+        <p>test → build image → deploy on every push to main.</p>
+        <div class="tools"><b>GitHub Actions</b> → .github/workflows/ml-ci.yml</div>
+      </div>
+
+      <div class="layer">
+        <h3><span class="dot" style="background:var(--s3)"></span> Deployment</h3>
+        <p>GitOps rollout of app, Postgres, Prometheus, Grafana.</p>
+        <div class="tools"><b>Kubernetes (minikube) + ArgoCD</b> → k8s/</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="legend">
+    <div class="li"><span class="sw" style="background:var(--s1)"></span> Ingestion</div>
+    <div class="li"><span class="sw" style="background:var(--s2)"></span> Validation</div>
+    <div class="li"><span class="sw" style="background:var(--s3)"></span> Features</div>
+    <div class="li"><span class="sw" style="background:var(--s4)"></span> Training</div>
+    <div class="li"><span class="sw" style="background:var(--s5)"></span> Evaluation</div>
+    <div class="li"><span class="sw" style="background:var(--s6)"></span> Promotion</div>
+    <div class="li"><span class="sw" style="background:var(--s7)"></span> Serving</div>
+    <div class="li"><span class="sw" style="background:var(--s8)"></span> Monitoring</div>
+  </div>
+  <p class="foot">Numbered stages mirror the <span class="mono">src/1_ingestion … src/8_monitoring</span> folders. Setup order &amp; the folders each tool creates are detailed in <span class="mono">docs/MLOps_Frameworks_Setup.xlsx</span>.</p>
+</div>

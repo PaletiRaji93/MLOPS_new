@@ -1,0 +1,122 @@
+schema: '2.0'
+stages:
+  prepare_feast_data:
+    cmd: python src/3_feature_engineering/2_prepare_feast_data.py
+    deps:
+    - path: data/features/march_2025_eda/march_2025_prepared.parquet
+      hash: md5
+      md5: 80a89c2b5a4c0f792951e13bf300dc65
+      size: 451685
+    - path: src/3_feature_engineering/2_prepare_feast_data.py
+      hash: md5
+      md5: 3daca2c592ad72a5daacd5692c8a0053
+      size: 2547
+    outs:
+    - path: my_feature_store/feature_repo/data/march_2025_features.parquet
+      hash: md5
+      md5: 3c19458edf212d2d55f02fc2c3623b1f
+      size: 354839
+  feast_apply:
+    cmd: cd my_feature_store/feature_repo && feast apply
+    deps:
+    - path: my_feature_store/feature_repo/data/march_2025_features.parquet
+      hash: md5
+      md5: 0968c488b51e3ac7deb01deba2b3d667
+      size: 425271
+    - path: my_feature_store/feature_repo/feature_definitions.py
+      hash: md5
+      md5: dfad39f29ee6d573f781820960915d3e
+      size: 4235
+    - path: my_feature_store/feature_repo/feature_store.yaml
+      hash: md5
+      md5: f6b0fbeafb5e6934957e495d0ec6f691
+      size: 592
+  feast_materialize:
+    cmd: cd my_feature_store/feature_repo && feast materialize 2025-03-01T00:00:00
+      2025-04-01T00:00:00
+    deps:
+    - path: my_feature_store/feature_repo/data/march_2025_features.parquet
+      hash: md5
+      md5: 0968c488b51e3ac7deb01deba2b3d667
+      size: 425271
+    - path: my_feature_store/feature_repo/feature_definitions.py
+      hash: md5
+      md5: dfad39f29ee6d573f781820960915d3e
+      size: 4235
+  train:
+    cmd: python src/4_training/1_train.py
+    deps:
+    - path: my_feature_store/feature_repo/data/march_2025_features.parquet
+      hash: md5
+      md5: 3c19458edf212d2d55f02fc2c3623b1f
+      size: 354839
+    - path: src/4_training/1_train.py
+      hash: md5
+      md5: 5c26913d2dedd3a59aac98db61edbb58
+      size: 18707
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: abfea22a158e5b34de0ed7538a0c0d9d
+      size: 824
+    - path: models/model.pkl
+      hash: md5
+      md5: ee4690e1abccfc98f51a5cdb5f50bbe5
+      size: 1287532
+  evaluate:
+    cmd: python src/5_evaluation/1_evaluate.py
+    deps:
+    - path: models/model.pkl
+      hash: md5
+      md5: ee4690e1abccfc98f51a5cdb5f50bbe5
+      size: 1287532
+    - path: my_feature_store/feature_repo/data/march_2025_features.parquet
+      hash: md5
+      md5: 3c19458edf212d2d55f02fc2c3623b1f
+      size: 354839
+    - path: src/4_training/1_train.py
+      hash: md5
+      md5: 5c26913d2dedd3a59aac98db61edbb58
+      size: 18707
+    - path: src/5_evaluation/1_evaluate.py
+      hash: md5
+      md5: 5383f023249a161e8ef8e60af46236f4
+      size: 14362
+    outs:
+    - path: eval_metrics.json
+      hash: md5
+      md5: 7bf4851d8358b8700d38e1987424685c
+      size: 261
+  promote:
+    cmd: python src/6_promotion/1_promote_model.py
+    deps:
+    - path: eval_metrics.json
+      hash: md5
+      md5: 7bf4851d8358b8700d38e1987424685c
+      size: 261
+    - path: src/6_promotion/1_promote_model.py
+      hash: md5
+      md5: c7fc0b83d4f6fb3d54ae0ce0231cf242
+      size: 12448
+    outs:
+    - path: promote_report.json
+      hash: md5
+      md5: 6e605a35b3c843debb10e09199be9746
+      size: 328
+  build_features:
+    cmd: python src/3_feature_engineering/1_build_features.py
+    deps:
+    - path: data/validated
+      hash: md5
+      md5: 4946c17ec362528b73d367a8c1206c33.dir
+      size: 1916824
+      nfiles: 139
+    - path: src/3_feature_engineering/1_build_features.py
+      hash: md5
+      md5: f543114381ab1f81b4988c7d1fab41b1
+      size: 20064
+    outs:
+    - path: data/features/march_2025_eda/march_2025_prepared.parquet
+      hash: md5
+      md5: 80a89c2b5a4c0f792951e13bf300dc65
+      size: 451685

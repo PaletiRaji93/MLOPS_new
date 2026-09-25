@@ -1,0 +1,6 @@
+outs:
+- md5: 953054caf22f1faa7ac0d416a4f9d44f.dir
+  size: 267815
+  nfiles: 28
+  hash: md5
+  path: rtm

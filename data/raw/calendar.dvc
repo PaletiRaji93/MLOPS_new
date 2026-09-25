@@ -1,0 +1,6 @@
+outs:
+- md5: 49a1c5a826eb859aeb2095f2407f8abf.dir
+  size: 1108
+  nfiles: 1
+  hash: md5
+  path: calendar

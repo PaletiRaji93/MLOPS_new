@@ -1,0 +1,103 @@
+# great_expectations.yml
+# ----------------------
+# Active GE context for the Energy Market Forecasting project.
+# Located at: gx/great_expectations.yml
+
+config_version: 3
+
+datasources:
+
+  # pandas_default — used by gx_validate_local.py via RuntimeBatchRequest
+  # Validates in-memory DataFrames directly — no S3 or file paths needed
+  pandas_default:
+    class_name: Datasource
+    execution_engine:
+      class_name: PandasExecutionEngine
+    data_connectors:
+      default_runtime_data_connector_name:
+        class_name: RuntimeDataConnector
+        batch_identifiers:
+          - default_identifier_name
+
+  # aispry_project — used by gx_validate_cloud.py via S3 connectors
+  aispry_project:
+    class_name: Datasource
+    execution_engine:
+      class_name: PandasExecutionEngine
+    data_connectors:
+      dam_connector:
+        class_name: InferredAssetS3DataConnector
+        bucket: aispry-projects-demo-bucket
+        prefix: bronze/dam/
+        default_regex:
+          pattern: (.*)\.csv
+          group_names:
+            - data_asset_name
+      rtm_connector:
+        class_name: InferredAssetS3DataConnector
+        bucket: aispry-projects-demo-bucket
+        prefix: bronze/rtm/
+        default_regex:
+          pattern: (.*)\.csv
+          group_names:
+            - data_asset_name
+      weather_connector:
+        class_name: InferredAssetS3DataConnector
+        bucket: aispry-projects-demo-bucket
+        prefix: bronze/weather/
+        default_regex:
+          pattern: (.*)\.csv
+          group_names:
+            - data_asset_name
+      calendar_connector:
+        class_name: InferredAssetS3DataConnector
+        bucket: aispry-projects-demo-bucket
+        prefix: bronze/calendar/
+        default_regex:
+          pattern: (.*)\.csv
+          group_names:
+            - data_asset_name
+
+config_variables_file_path: uncommitted/config_variables.yml
+plugins_directory: plugins/
+
+stores:
+  expectations_store:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: expectations/
+
+  validations_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: uncommitted/validations/
+
+  evaluation_parameter_store:
+    class_name: EvaluationParameterStore
+
+  checkpoint_store:
+    class_name: CheckpointStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      suppress_store_backend_id: true
+      base_directory: checkpoints/
+
+expectations_store_name: expectations_store
+validations_store_name: validations_store
+evaluation_parameter_store_name: evaluation_parameter_store
+checkpoint_store_name: checkpoint_store
+
+data_docs_sites:
+  local_site:
+    class_name: SiteBuilder
+    show_how_to_buttons: true
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: uncommitted/data_docs/local_site/
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+
+anonymous_usage_statistics:
+  enabled: false

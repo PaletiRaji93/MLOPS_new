@@ -1,0 +1,12 @@
+{
+  "action": "promoted",
+  "reason": "no existing production model",
+  "latest_version": "3",
+  "latest_run_id": "ddb6e25a25c544f78461a8d095b28528",
+  "latest_metrics": {
+    "eval_rmse": 811.9685480953445,
+    "eval_mae": 447.10027261101465,
+    "eval_mape": 7.844804456590627,
+    "eval_r2": 0.90974153571306
+  }
+}

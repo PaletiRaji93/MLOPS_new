@@ -1,0 +1,4 @@
+/march_2025_features.parquet
+# Feast generated stores — rebuilt by `feast apply` + 3_refresh_online_store.py
+/online_store.db
+/registry.db
