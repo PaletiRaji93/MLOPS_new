@@ -1,0 +1,112 @@
+
+E
+%
+__dummy"
+__dummy_idJexcited_osprey
+òğÚÕøãë¶òğÚÕøãë¶
+b
+B
+block15-minute DAM market time block"block_idJexcited_osprey
+ö¦ßÕØœıïö¦ßÕØœıï1"$7c449d06-cb66-49d5-a0d3-c2aea22b1b92*˜ÑíÕ¨é²š2î
+’
+dam_mcp_featuresexcited_ospreyblock"
+hour_sin"
+hour_cos"
+dow_sin"
+dow_cos"
+	block_sin"
+	block_cos"
+day_of_month"
+
+is_weekend"
+is_peak_hour"
+is_morning_ramp"
+is_off_peak"
+dam_purchase_bid"
+dam_sell_bid"
+dam_mcv"
+
+dam_volume"
+dam_bid_imbalance"
+rtm_purchase_bid"
+rtm_sell_bid"
+rtm_mcv"
+
+rtm_volume"
+
+mcp_spread"
+dam_mcp_lag_1d"
+dam_mcp_lag_2d"
+dam_mcp_lag_7d"
+dam_mcp_roll_4h"
+dam_mcp_roll_24h"
+dam_mcp_roll_std_24h"
+avg_temp"
+avg_humidity"
+avg_windspeed"
+avg_cloud_cover"
+total_rainfall"
+is_ipl_match"
+is_event"
+is_festival"
+is_wedding_season"
+
+impact*
+teamdam_mcp_forecasting2€ç„:¢event_timestampZ" data/march_2025_features.parquetŠ1feast.infra.offline_stores.file_source.FileSource¢dam_mcp_features_source’İÇíÕØË¤E"İÇíÕØË¤E@b
+block_idW
+ö¦ßÕØœıï˜ÑíÕ¨é²š
+ÓßèÆĞêôh›áîÕ
+›áîÕ¸âîÕ
+€‘®¾üÑ¬¿:İ
+¼
+dam_mcp_forecast_v1excited_osprey”
+dam_mcp_features
+hour_sin
+hour_cos
+dow_sin
+dow_cos
+	block_sin
+	block_cos
+day_of_month
+
+is_weekend
+is_peak_hour
+is_morning_ramp
+is_off_peak
+dam_purchase_bid
+dam_sell_bid
+dam_mcv
+
+dam_volume
+dam_bid_imbalance
+rtm_purchase_bid
+rtm_sell_bid
+rtm_mcv
+
+rtm_volume
+
+mcp_spread
+dam_mcp_lag_1d
+dam_mcp_lag_2d
+dam_mcp_lag_7d
+dam_mcp_roll_4h
+dam_mcp_roll_24h
+dam_mcp_roll_std_24h
+avg_temp
+avg_humidity
+avg_windspeed
+avg_cloud_cover
+total_rainfall
+is_ipl_match
+is_event
+is_festival
+is_wedding_season
+
+impactBpevent_timestampZ" data/march_2025_features.parquet¢dam_mcp_features_source’õ¦ßÕØ—¥ÿ"ö¦ßÕ€àï
+ö¦ßÕˆ–÷ğö¦ßÕˆ–÷ğR“
+
+,feast.infra.online_stores.sqlite.SqliteTable"`
+=E:\MLOPS_new\excited_osprey\feature_repo\data\online_store.dbexcited_osprey_dam_mcp_featuresbµevent_timestampZ" data/march_2025_features.parquetŠ1feast.infra.offline_stores.file_source.FileSource¢dam_mcp_features_sourceªexcited_osprey’õ¦ßÕØ—¥ÿ"ö¦ßÕ€àïŠ/
+
+excited_osprey
+îğÚÕØ£Ç"õ¦ßÕğÚ€ƒ
